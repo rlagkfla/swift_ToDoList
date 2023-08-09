@@ -39,12 +39,12 @@ class CustomCell:UITableViewCell, UITableViewRegisterable {
 
 }
 
-// 등록 데이터 다른 클래스 생성해서 거기서 데이터 받아오기 싱글톤패턴
+// 등록 데이터
 struct Memo{
     var title: String?
     var isCompleted: Bool = false
 }
-
+// 클래스 생성, static변수 선언해서 데이터 받아오기, 싱글톤패턴
 class MemoStore {
     static var data: Array<Memo> = []
 }
@@ -128,6 +128,7 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
        
         if sender.isOn == true {
             MemoStore.data[sender.tag].isCompleted = true
+            
         }else{
             MemoStore.data[sender.tag].isCompleted = false
         }
@@ -137,7 +138,27 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
     // 테이블 뷰 셀 선택 처리
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // 선택된 셀의 항목 출력
-        print("선택된 항목: \(MemoStore.data[indexPath.row])")
+        performSegue(withIdentifier: "ShowDetail", sender: indexPath.row)
+
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // 셀 선택 시 디테일 페이지 이동
+        if segue.identifier == "ShowDetail" {
+            let vc = segue.destination as? CellDetailViewController
+            if let first_index = sender as? Int {
+                vc?.numOfPage = first_index
+            }
+        }
+        
+        // 스위치 on 시 체크리스트 페이지로 이동
+//        if segue.identifier == "ShowCheckList" {
+//            let vc2 = segue.destination as? CheckListViewController
+//            if let index = sender as? Int {
+//                vc2?.numOfCheckPage = index
+//            }
+//        }
+        
     }
     
 }
