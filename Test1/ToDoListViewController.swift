@@ -49,6 +49,15 @@ class MemoStore {
     static var data: Array<Memo> = []
 }
 
+// 완료 체크 시(스위치 on) 텍스트에 취소선 생성
+extension String {
+    func strikeThrough() -> NSAttributedString {
+        let attributeString = NSMutableAttributedString(string: self)
+        attributeString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: NSUnderlineStyle.single.rawValue, range: NSMakeRange(0, attributeString.length))
+        return attributeString
+    }
+}
+
 class ListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
    
     // 테이블 뷰
@@ -113,27 +122,60 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         // 초기 생성 시 버튼 누르지 않은 채로 생성
         onOff.isOn = MemoStore.data[indexPath.row].isCompleted
         // switch addtarget 지정
-        onOff.addTarget(self, action: #selector(self.switchDidChange(_:)), for: .valueChanged)
+        onOff.addTarget(self, action: #selector(switchDidChange(_:)), for: .valueChanged)
+//        onOff.addTarget(self, action: #selector(switchDidChange(_:)), for: .valueChanged)
+        
         //cell accessoryView를 switch로 지정
         cell.accessoryView = onOff
 
         // 테이블뷰 생성
-        cell.textLabel?.text = MemoStore.data[indexPath.row].title
+        if onOff.isOn == true {
+//            cell.textLabel?.text = MemoStore.data[indexPath.row].title
+            
+            cell.textLabel?.attributedText = MemoStore.data[indexPath.row].title?.strikeThrough()
+        }else{
+
+            cell.textLabel?.text = MemoStore.data[indexPath.row].title
+            
+//            cell.textLabel?.text = MemoStore.data[indexPath.row].title
+        }
+        
+//        cell.textLabel?.text = MemoStore.data[indexPath.row].title
+        
         
         return cell
     }
 
     // 스위치 상태 바뀔 때 마다 처리
-    @objc func switchDidChange(_ sender: UISwitch){
-       
+    @objc func switchDidChange(_ sender: UISwitch) {
+//        let cell = tableView.dequeueReusableCell(withIdentifier: "MyTableViewCell", for: indexPath)
+
         if sender.isOn == true {
             MemoStore.data[sender.tag].isCompleted = true
-            
+//            cell.textLabel?.attributedText = MemoStore.data[sender.tag].title?.strikeThrough()
+
         }else{
             MemoStore.data[sender.tag].isCompleted = false
+//            cell.textLabel?.text = MemoStore.data[sender.tag].title
         }
-        
+        let index = IndexPath(row: sender.tag, section: 0)
+        tableView.reloadRows(at: [index], with: .automatic)
     }
+    
+//    @objc func switchDidChange(_ sender: UISwitch) {
+////        let cell = tableView.dequeueReusableCell(withIdentifier: "MyTableViewCell", for: indexPath)
+//
+//        if sender.isOn == true {
+//            MemoStore.data[sender.tag].isCompleted = true
+////            cell.textLabel?.attributedText = MemoStore.data[sender.tag].title?.strikeThrough()
+//
+//        }else{
+//            MemoStore.data[sender.tag].isCompleted = false
+////            cell.textLabel?.text = MemoStore.data[sender.tag].title
+//        }
+////        tableView.reloadRows(at: [indexPath], with: .automatic)
+//    }
+    
     
     // 테이블 뷰 셀 선택 처리
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
