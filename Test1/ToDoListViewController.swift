@@ -56,6 +56,13 @@ extension String {
         attributeString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: NSUnderlineStyle.single.rawValue, range: NSMakeRange(0, attributeString.length))
         return attributeString
     }
+    
+    func removeStrikeThrough() -> NSAttributedString {
+        let attributedString = NSAttributedString(string: self)
+        let mutableAttributedString = NSMutableAttributedString(attributedString: attributedString)
+        mutableAttributedString.removeAttribute(NSAttributedString.Key.strikethroughStyle, range: NSMakeRange(0, mutableAttributedString.length))
+        return mutableAttributedString
+    }
 }
 
 class ListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
@@ -123,58 +130,33 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         onOff.isOn = MemoStore.data[indexPath.row].isCompleted
         // switch addtarget 지정
         onOff.addTarget(self, action: #selector(switchDidChange(_:)), for: .valueChanged)
-//        onOff.addTarget(self, action: #selector(switchDidChange(_:)), for: .valueChanged)
-        
         //cell accessoryView를 switch로 지정
         cell.accessoryView = onOff
 
-        // 테이블뷰 생성
+        // 테이블뷰 생성(취소선 유무)
         if onOff.isOn == true {
-//            cell.textLabel?.text = MemoStore.data[indexPath.row].title
-            
             cell.textLabel?.attributedText = MemoStore.data[indexPath.row].title?.strikeThrough()
         }else{
-
-            cell.textLabel?.text = MemoStore.data[indexPath.row].title
-            
-//            cell.textLabel?.text = MemoStore.data[indexPath.row].title
+            cell.textLabel?.attributedText = MemoStore.data[indexPath.row].title?.removeStrikeThrough()
         }
-        
-//        cell.textLabel?.text = MemoStore.data[indexPath.row].title
-        
         
         return cell
     }
 
     // 스위치 상태 바뀔 때 마다 처리
     @objc func switchDidChange(_ sender: UISwitch) {
-//        let cell = tableView.dequeueReusableCell(withIdentifier: "MyTableViewCell", for: indexPath)
 
         if sender.isOn == true {
             MemoStore.data[sender.tag].isCompleted = true
-//            cell.textLabel?.attributedText = MemoStore.data[sender.tag].title?.strikeThrough()
 
         }else{
             MemoStore.data[sender.tag].isCompleted = false
-//            cell.textLabel?.text = MemoStore.data[sender.tag].title
         }
+        // 해당 스위치의 인덱스 값을 태그로 받아옴
         let index = IndexPath(row: sender.tag, section: 0)
+        // 스위치 상태 변화 했으니 테이블 로우 reload
         tableView.reloadRows(at: [index], with: .automatic)
     }
-    
-//    @objc func switchDidChange(_ sender: UISwitch) {
-////        let cell = tableView.dequeueReusableCell(withIdentifier: "MyTableViewCell", for: indexPath)
-//
-//        if sender.isOn == true {
-//            MemoStore.data[sender.tag].isCompleted = true
-////            cell.textLabel?.attributedText = MemoStore.data[sender.tag].title?.strikeThrough()
-//
-//        }else{
-//            MemoStore.data[sender.tag].isCompleted = false
-////            cell.textLabel?.text = MemoStore.data[sender.tag].title
-//        }
-////        tableView.reloadRows(at: [indexPath], with: .automatic)
-//    }
     
     
     // 테이블 뷰 셀 선택 처리
@@ -190,16 +172,9 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
             let vc = segue.destination as? CellDetailViewController
             if let first_index = sender as? Int {
                 vc?.numOfPage = first_index
+//                if MemoStore.data[first_index].isCompleted == false {}
             }
         }
-        
-        // 스위치 on 시 체크리스트 페이지로 이동
-//        if segue.identifier == "ShowCheckList" {
-//            let vc2 = segue.destination as? CheckListViewController
-//            if let index = sender as? Int {
-//                vc2?.numOfCheckPage = index
-//            }
-//        }
         
     }
     

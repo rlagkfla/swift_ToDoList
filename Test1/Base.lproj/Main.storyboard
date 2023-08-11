@@ -17,17 +17,30 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eNe-ti-st5">
-                                <rect key="frame" x="136" y="603" width="121" height="35"/>
+                                <rect key="frame" x="134" y="645" width="125" height="40.333333333333371"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="완료한 일 보기"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Check List">
+                                    <fontDescription key="titleFontDescription" type="system" pointSize="22"/>
+                                </buttonConfiguration>
                                 <connections>
                                     <segue destination="Ius-h8-Vq6" kind="show" id="Aum-pj-H9R"/>
                                 </connections>
                             </button>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="square.and.pencil" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="JeU-G6-xEI">
+                                <rect key="frame" x="76" y="188" width="241" height="240"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="241.66666666666669" id="MDP-8x-aY6"/>
+                                </constraints>
+                            </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="05d-HR-ayg">
-                                <rect key="frame" x="126" y="497" width="141" height="35"/>
+                                <rect key="frame" x="126" y="523" width="141" height="35"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="35" id="vgL-Et-3oO"/>
+                                </constraints>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="할 일 확인하기"/>
+                                <buttonConfiguration key="configuration" style="plain" title="To Do List">
+                                    <fontDescription key="titleFontDescription" type="system" pointSize="22"/>
+                                </buttonConfiguration>
                                 <connections>
                                     <segue destination="Goi-4Z-lEj" kind="show" id="jEn-u2-Xr4"/>
                                 </connections>
@@ -36,10 +49,14 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="05d-HR-ayg" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="394" id="KaC-t6-AmO"/>
+                            <constraint firstItem="JeU-G6-xEI" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="76" id="8Dc-3g-v52"/>
+                            <constraint firstItem="JeU-G6-xEI" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="84.666666666666657" id="CQe-8S-m9V"/>
+                            <constraint firstItem="05d-HR-ayg" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="420" id="KaC-t6-AmO"/>
+                            <constraint firstItem="eNe-ti-st5" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="134" id="Kbe-w2-Nme"/>
                             <constraint firstItem="05d-HR-ayg" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="S6t-bI-XIU"/>
                             <constraint firstItem="05d-HR-ayg" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="126" id="gA1-kY-Prv"/>
-                            <constraint firstItem="eNe-ti-st5" firstAttribute="top" secondItem="05d-HR-ayg" secondAttribute="bottom" constant="71" id="xn9-uj-qbb"/>
+                            <constraint firstItem="JeU-G6-xEI" firstAttribute="centerX" secondItem="05d-HR-ayg" secondAttribute="centerX" id="hv9-1b-uXc"/>
+                            <constraint firstItem="eNe-ti-st5" firstAttribute="top" secondItem="05d-HR-ayg" secondAttribute="bottom" constant="87" id="xn9-uj-qbb"/>
                             <constraint firstItem="eNe-ti-st5" firstAttribute="centerX" secondItem="05d-HR-ayg" secondAttribute="centerX" id="zcN-So-bre"/>
                         </constraints>
                     </view>
@@ -53,7 +70,7 @@
             </objects>
             <point key="canvasLocation" x="1741.2213740458014" y="-7.042253521126761"/>
         </scene>
-        <!--CheckList-->
+        <!--Check List-->
         <scene sceneID="rlw-GG-ttv">
             <objects>
                 <viewController id="Ius-h8-Vq6" customClass="CheckListViewController" customModule="Test1" customModuleProvider="target" sceneMemberID="viewController">
@@ -98,7 +115,7 @@
                             <constraint firstItem="Fhq-Gw-apq" firstAttribute="leading" secondItem="rcQ-Fo-feI" secondAttribute="leading" id="yDn-77-LSu"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="CheckList" id="Rn9-xW-rVJ"/>
+                    <navigationItem key="navigationItem" title="Check List" id="Rn9-xW-rVJ"/>
                     <connections>
                         <outlet property="tableView" destination="Fhq-Gw-apq" id="VA5-JL-BKF"/>
                     </connections>
@@ -107,7 +124,7 @@
             </objects>
             <point key="canvasLocation" x="2540" y="358"/>
         </scene>
-        <!--ToDoList-->
+        <!--To Do List-->
         <scene sceneID="Dgb-Hx-2AO">
             <objects>
                 <viewController id="Goi-4Z-lEj" customClass="ListViewController" customModule="Test1" customModuleProvider="target" sceneMemberID="viewController">
@@ -117,7 +134,7 @@
                         <viewLayoutGuide key="safeArea" id="SYd-kE-Om6"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <navigationItem key="navigationItem" title="ToDoList" id="2Kq-y6-3qD">
+                    <navigationItem key="navigationItem" title="To Do List" id="2Kq-y6-3qD">
                         <barButtonItem key="rightBarButtonItem" title="등록" id="1PZ-FA-5f9">
                             <connections>
                                 <action selector="BarButtonAction:" destination="Goi-4Z-lEj" id="mfh-lA-ZwJ"/>
@@ -133,7 +150,7 @@
             </objects>
             <point key="canvasLocation" x="2541" y="-357"/>
         </scene>
-        <!--DetailPage-->
+        <!--Detail Page-->
         <scene sceneID="LwO-vJ-Wkv">
             <objects>
                 <viewController id="HR9-UP-hAV" customClass="CellDetailViewController" customModule="Test1" customModuleProvider="target" sceneMemberID="viewController">
@@ -160,8 +177,8 @@
                         <viewLayoutGuide key="safeArea" id="uIj-Fw-WC1"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <navigationItem key="navigationItem" title="DetailPage" id="wlq-On-UBz">
-                        <barButtonItem key="rightBarButtonItem" title="수정" id="SgI-Sa-KEw"/>
+                    <navigationItem key="navigationItem" title="Detail Page" id="wlq-On-UBz">
+                        <barButtonItem key="rightBarButtonItem" title="완료" id="SgI-Sa-KEw"/>
                     </navigationItem>
                     <connections>
                         <outlet property="showDetail" destination="HWT-eW-OgS" id="E03-Qd-gJh"/>
@@ -197,6 +214,7 @@
         <segue reference="Aum-pj-H9R"/>
     </inferredMetricsTieBreakers>
     <resources>
+        <image name="square.and.pencil" catalog="system" width="128" height="113"/>
         <systemColor name="labelColor">
             <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
