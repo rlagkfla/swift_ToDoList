@@ -40,7 +40,7 @@ class CustomCell:UITableViewCell, UITableViewRegisterable {
 }
 
 // 등록 데이터
-struct Memo{
+struct Memo: Codable {
     var title: String?
     var isCompleted: Bool = false
 }
@@ -72,20 +72,38 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
     // 스위치 호출
     var onOff: UISwitch!
     
+    // UserDefaults 객체 생성
+    let defaults = UserDefaults.standard
+    let encoder = JSONEncoder()
+    let decoder = JSONDecoder()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        
+
         // 테이블 뷰 초기화
         tableView = UITableView(frame: view.bounds, style: .plain)
         tableView.delegate = self
         tableView.dataSource = self
-        
+
         // 등록한 셀 호출
         CustomCell.register(target: self.tableView)
 
         // 테이블 뷰 등록
         view.addSubview(tableView)
+
+    }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+//        print("App Directory path : \(NSHomeDirectory())")
+        
+        // 저장된 데이터 불러오기
+        if let savedData = defaults.object(forKey: "memo") as? Data {
+            if let savedObject = try? decoder.decode([Memo].self, from: savedData) {
+                MemoStore.data = savedObject
+            }
+        }
         
     }
 
@@ -103,6 +121,10 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         alert.addAction(UIAlertAction(title: "추가", style: .default, handler: { action in
             if let toDo = alert.textFields?.first?.text{
                 MemoStore.data.append(Memo(title: toDo))
+                // 등록 시 저장, encoded는 Data형
+                if let encoded = try? self.encoder.encode(MemoStore.data) {
+                    self.defaults.setValue(encoded, forKey: "memo")
+                }
                 self.tableView.reloadData()
             }
         }))
@@ -152,10 +174,16 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         }else{
             MemoStore.data[sender.tag].isCompleted = false
         }
-        // 해당 스위치의 인덱스 값을 태그로 받아옴
+        
+        // switch 변경 시 저장(update), encoded는 Data형
+        if let encoded = try? self.encoder.encode(MemoStore.data) {
+            self.defaults.setValue(encoded, forKey: "memo")
+        }
+                // 해당 스위치의 인덱스 값을 태그로 받아옴
         let index = IndexPath(row: sender.tag, section: 0)
         // 스위치 상태 변화 했으니 테이블 로우 reload
         tableView.reloadRows(at: [index], with: .automatic)
+        
     }
     
     
