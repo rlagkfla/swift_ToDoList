@@ -48,7 +48,7 @@ class CellDetailViewController: UIViewController {
                 MemoStore.data[self.numOfPage!].title = updateMemo
                 // 수정하여 저장 
                 if let encoded = try?self.encoder.encode(MemoStore.data) {
-                    self.defaults.setValue(encoded, forKey: "memo")
+                    self.defaults.set(encoded, forKey: "memo")
                 }
             }
         }))

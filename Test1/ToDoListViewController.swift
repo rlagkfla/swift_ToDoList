@@ -79,7 +79,7 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // 테이블 뷰 초기화
         tableView = UITableView(frame: view.bounds, style: .plain)
         tableView.delegate = self
@@ -91,13 +91,6 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         // 테이블 뷰 등록
         view.addSubview(tableView)
 
-    }
-    
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-//        print("App Directory path : \(NSHomeDirectory())")
-        
         // 저장된 데이터 불러오기
         if let savedData = defaults.object(forKey: "memo") as? Data {
             if let savedObject = try? decoder.decode([Memo].self, from: savedData) {
@@ -105,6 +98,13 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         }
         
+    }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+//        print("App Directory path : \(NSHomeDirectory())")
+//        print("data : \(MemoStore.data)")
         // 디테일페이지에서 수정 후 데이터 reload
         tableView.reloadData()
         
@@ -126,7 +126,7 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
                 MemoStore.data.append(Memo(title: toDo))
                 // 등록 시 저장, encoded는 Data형
                 if let encoded = try? self.encoder.encode(MemoStore.data) {
-                    self.defaults.setValue(encoded, forKey: "memo")
+                    self.defaults.set(encoded, forKey: "memo")
                 }
                 self.tableView.reloadData()
             }
@@ -180,7 +180,7 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         // switch 변경 시 저장(update), encoded는 Data형
         if let encoded = try? self.encoder.encode(MemoStore.data) {
-            self.defaults.setValue(encoded, forKey: "memo")
+            self.defaults.set(encoded, forKey: "memo")
         }
         // 해당 스위치의 인덱스 값을 태그로 받아옴
         let index = IndexPath(row: sender.tag, section: 0)
@@ -208,6 +208,27 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         
     }
+    
+    
+    // 스와이프 삭제 구현
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            
+            MemoStore.data.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            
+            // 데이터 삭제 된 배열을 다시 저장
+            if let encoded = try? self.encoder.encode(MemoStore.data) {
+                self.defaults.set(encoded, forKey: "memo")
+            }
+            
+//            defaults.removeObject(forKey: "memo")
+            
+            tableView.reloadData()
+        }
+    }
+    
+    
     
 }
 
