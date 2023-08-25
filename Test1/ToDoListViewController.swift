@@ -105,6 +105,9 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         }
         
+        // 디테일페이지에서 수정 후 데이터 reload
+        tableView.reloadData()
+        
     }
 
     // 등록 처리
@@ -179,7 +182,7 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         if let encoded = try? self.encoder.encode(MemoStore.data) {
             self.defaults.setValue(encoded, forKey: "memo")
         }
-                // 해당 스위치의 인덱스 값을 태그로 받아옴
+        // 해당 스위치의 인덱스 값을 태그로 받아옴
         let index = IndexPath(row: sender.tag, section: 0)
         // 스위치 상태 변화 했으니 테이블 로우 reload
         tableView.reloadRows(at: [index], with: .automatic)

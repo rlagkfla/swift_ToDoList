@@ -12,6 +12,10 @@ class CellDetailViewController: UIViewController {
     // 선택한 셀 인덱스 값 받아오기
     var numOfPage: Int?
     
+    // UserDefaults 객체 생성
+    let defaults = UserDefaults.standard
+    let encoder = JSONEncoder()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -33,8 +37,24 @@ class CellDetailViewController: UIViewController {
 //        print(showDetail.text)
     }
     
-    // 메모 수정
-    // 여기서 입력받은 값을 변수에 담아서 뒤로가기 버튼 눌렀을 때 리스트뷰 컨트롤러로 전달
+    // UserDefaults 사용하여 Update 구현
+    @IBAction func UpdateMemo(_ sender: Any) {
+        
+        let alert = UIAlertController(title: "수정하시겠습니까?", message: nil, preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "수정", style: .destructive, handler: { action in
+            if let updateMemo = self.showDetail.text {
+                MemoStore.data[self.numOfPage!].title = updateMemo
+                // 수정하여 저장 
+                if let encoded = try?self.encoder.encode(MemoStore.data) {
+                    self.defaults.setValue(encoded, forKey: "memo")
+                }
+            }
+        }))
+        
+        self.present(alert, animated: true, completion: nil)
+    }
     
     
 }

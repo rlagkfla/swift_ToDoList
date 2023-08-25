@@ -178,7 +178,11 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <navigationItem key="navigationItem" title="Detail Page" id="wlq-On-UBz">
-                        <barButtonItem key="rightBarButtonItem" title="완료" id="SgI-Sa-KEw"/>
+                        <barButtonItem key="rightBarButtonItem" title="수정" id="SgI-Sa-KEw">
+                            <connections>
+                                <action selector="UpdateMemo:" destination="HR9-UP-hAV" id="iVi-Zh-e7f"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="showDetail" destination="HWT-eW-OgS" id="E03-Qd-gJh"/>
