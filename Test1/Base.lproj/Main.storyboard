@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="XVp-Nf-Hcy">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -135,11 +136,18 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <navigationItem key="navigationItem" title="To Do List" id="2Kq-y6-3qD">
-                        <barButtonItem key="rightBarButtonItem" title="등록" id="1PZ-FA-5f9">
-                            <connections>
-                                <action selector="BarButtonAction:" destination="Goi-4Z-lEj" id="mfh-lA-ZwJ"/>
-                            </connections>
-                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem title="등록" id="1PZ-FA-5f9">
+                                <connections>
+                                    <action selector="BarButtonAction:" destination="Goi-4Z-lEj" id="mfh-lA-ZwJ"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="피커뷰" id="hVe-0t-HdJ">
+                                <connections>
+                                    <action selector="PickerViewAction:" destination="Goi-4Z-lEj" id="DcG-jM-y9y"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
                     <connections>
                         <segue destination="HR9-UP-hAV" kind="show" identifier="ShowDetail" id="fKa-2P-TUf"/>

@@ -41,6 +41,7 @@ class CustomCell:UITableViewCell, UITableViewRegisterable {
 
 // 등록 데이터
 struct Memo: Codable {
+    var category: String?
     var title: String?
     var isCompleted: Bool = false
 }
@@ -65,8 +66,8 @@ extension String {
     }
 }
 
-class ListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-   
+class ListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UIPickerViewDelegate, UIPickerViewDataSource {
+    
     // 테이블 뷰
     var tableView: UITableView!
     // 스위치 호출
@@ -76,6 +77,12 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
     let defaults = UserDefaults.standard
     let encoder = JSONEncoder()
     let decoder = JSONDecoder()
+    
+    // tableview section
+    let sections: [String] = ["WORK", "LIFE"]
+    // pickerview value
+    var typeValue = String()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -104,26 +111,64 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 //        print("App Directory path : \(NSHomeDirectory())")
-//        print("data : \(MemoStore.data)")
+        print("data : \(MemoStore.data)")
         // 디테일페이지에서 수정 후 데이터 reload
         tableView.reloadData()
         
     }
-
-    // 등록 처리
-    @IBAction func BarButtonAction(_ sender: Any) {
-
-        let alert = UIAlertController(title: "등록", message: nil, preferredStyle: .alert)
+    
+    // PickerView 설정
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return sections.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return sections[row]
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         
-        alert.addTextField {(textField) in
+//        print("1 - row: \(row), typevalue: \(typeValue)")
+        if row == 0 {
+//            print(2)
+            typeValue = sections[0]
+        } else {
+//            print(3)
+            typeValue = sections[1]
+        }
+//        print("4 - row: \(row), typevalue: \(typeValue)")
+    }
+    
+    // Picker View 액션(임시)
+    @IBAction func PickerViewAction(_ sender: Any) {
+        // 초기값 설정
+        typeValue = sections[0]
+        
+        let vc = UIViewController()
+        vc.preferredContentSize = CGSize(width: 250,height: 100)
+        let pickerView = UIPickerView(frame: CGRect(x: 0, y: -20, width: 250, height: 100))
+        
+//        pickerView.selectRow(sections.firstIndex(of: typeValue)!, inComponent: 0, animated: true)
+        
+        pickerView.delegate = self
+        pickerView.dataSource = self
+        vc.view.addSubview(pickerView)
+        
+        let editRadiusAlert = UIAlertController(title: "할 일 작성", message: "", preferredStyle: UIAlertController.Style.alert)
+        editRadiusAlert.setValue(vc, forKey: "contentViewController")
+        editRadiusAlert.addTextField {(textField) in
             textField.placeholder = "할 일을 입력하세요"
         }
-        
-        alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
-        
-        alert.addAction(UIAlertAction(title: "추가", style: .default, handler: { action in
-            if let toDo = alert.textFields?.first?.text{
-                MemoStore.data.append(Memo(title: toDo))
+        editRadiusAlert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+        editRadiusAlert.addAction(UIAlertAction(title: "선택", style: .default, handler: { action in
+//            print("category: \(self.typeValue)")
+            
+            if let toDo = editRadiusAlert.textFields?.first?.text{
+                MemoStore.data.append(Memo(category: self.typeValue, title: toDo))
                 // 등록 시 저장, encoded는 Data형
                 if let encoded = try? self.encoder.encode(MemoStore.data) {
                     self.defaults.set(encoded, forKey: "memo")
@@ -132,12 +177,67 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         }))
         
-        self.present(alert, animated: true, completion: nil)
+        self.present(editRadiusAlert, animated: true)
+    }
+    
+    
+    // 등록 처리
+    @IBAction func BarButtonAction(_ sender: Any) {
+
+//        let alert = UIAlertController(title: "등록", message: nil, preferredStyle: .alert)
+//
+//        alert.addTextField {(textField) in
+//            textField.placeholder = "할 일을 입력하세요"
+//        }
+//
+//        alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+//
+//        alert.addAction(UIAlertAction(title: "추가", style: .default, handler: { action in
+//            if let toDo = alert.textFields?.first?.text{
+//                MemoStore.data.append(Memo(title: toDo))
+//                // 등록 시 저장, encoded는 Data형
+//                if let encoded = try? self.encoder.encode(MemoStore.data) {
+//                    self.defaults.set(encoded, forKey: "memo")
+//                }
+//                self.tableView.reloadData()
+//            }
+//        }))
+//
+//        self.present(alert, animated: true, completion: nil)
+    }
+    
+    // Section 개수
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return sections.count
+    }
+    
+    // Section 이름
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return sections[section]
     }
     
     // 테이블 뷰 셀 개수 반환
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return MemoStore.data.count
+//        print("11category: \(typeValue) , section: \(section)")
+        if section == 0 {
+//            print(11)
+            return MemoStore.data.count
+        } else if section == 1{
+//            print(22)
+            return MemoStore.data.count
+        } else {
+//            print(33)
+            return 0
+        }
+        
+//        print("11category: \(typeValue) , section: \(section)")
+//        if typeValue == "WORK" {
+//            print(11)
+//            return MemoStore.data.count
+//        } else {
+//            print(22)
+//            return MemoStore.data.count
+//        }
     }
     
 
@@ -163,6 +263,22 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
             cell.textLabel?.attributedText = MemoStore.data[indexPath.row].title?.strikeThrough()
         }else{
             cell.textLabel?.attributedText = MemoStore.data[indexPath.row].title?.removeStrikeThrough()
+        }
+        
+//        if indexPath.section == 0 {
+//            cell.textLabel?.text = MemoStore.data[indexPath.row].title
+//        }else if indexPath.section == 1 {
+//            cell.textLabel?.text = MemoStore.data[indexPath.row].title
+//        }else {
+//            return UITableViewCell()
+//        }
+//        print("44category: \(typeValue)")
+        if typeValue == "WORK" {
+//            print(44)
+            cell.textLabel?.text = MemoStore.data[indexPath.row].title
+        } else {
+//            print(55)
+            cell.textLabel?.text = MemoStore.data[indexPath.row].title
         }
         
         return cell
@@ -223,6 +339,7 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
             
 //            defaults.removeObject(forKey: "memo")
+            //  키를 여러개 만들어서
             
             tableView.reloadData()
         }
