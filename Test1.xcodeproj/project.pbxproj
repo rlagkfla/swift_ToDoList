@@ -45,6 +45,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C3780A8D2A9DBBCF0049A642 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		C3780A8E2A9DBBDC0049A642 /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		C3780A8F2A9DBBE50049A642 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
 		C3ED80392A7C8F2700223147 = {
 			isa = PBXGroup;
 			children = (
@@ -66,6 +87,9 @@
 			children = (
 				C3ED80452A7C8F2700223147 /* AppDelegate.swift */,
 				C3ED80472A7C8F2700223147 /* SceneDelegate.swift */,
+				C3780A8D2A9DBBCF0049A642 /* Model */,
+				C3780A8E2A9DBBDC0049A642 /* View */,
+				C3780A8F2A9DBBE50049A642 /* Controller */,
 				C3ED80492A7C8F2700223147 /* ViewController.swift */,
 				C3E6922A2A80720900105D10 /* ToDoListViewController.swift */,
 				C36D014B2A8321BC0062D944 /* CellDetailViewController.swift */,
