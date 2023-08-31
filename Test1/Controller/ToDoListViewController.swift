@@ -7,75 +7,16 @@
 
 import UIKit
 
-// 테이블 셀 등록 설정
-protocol UITableViewRegisterable {
-    static var cellId: String { get }
-    static var isFromNib: Bool { get }
-    
-    static func register(target: UITableView)
-}
-
-extension UITableViewRegisterable where Self: UITableViewCell {
-    static func register(target: UITableView){
-        if self.isFromNib {
-            target.register(UINib(nibName: self.cellId, bundle: nil), forCellReuseIdentifier: self.cellId)
-        } else {
-            target.register(Self.self, forCellReuseIdentifier: self.cellId)
-        }
-    }
-}
-
-class CustomCell:UITableViewCell, UITableViewRegisterable {
-    static var cellId: String {
-        get {
-            return "MyTableViewCell"
-        }
-    }
-    static var isFromNib: Bool {
-        get {
-            return false
-        }
-    }
-
-}
-
-// 등록 데이터
-struct Memo: Codable {
-    var title: String?
-    var isCompleted: Bool = false
-}
-// 클래스 생성, static변수 선언해서 데이터 받아오기, 싱글톤패턴
-class MemoStore {
-    static var data: Array<Memo> = []
-}
-
-// 완료 체크 시(스위치 on) 텍스트에 취소선 생성
-extension String {
-    func strikeThrough() -> NSAttributedString {
-        let attributeString = NSMutableAttributedString(string: self)
-        attributeString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: NSUnderlineStyle.single.rawValue, range: NSMakeRange(0, attributeString.length))
-        return attributeString
-    }
-    
-    func removeStrikeThrough() -> NSAttributedString {
-        let attributedString = NSAttributedString(string: self)
-        let mutableAttributedString = NSMutableAttributedString(attributedString: attributedString)
-        mutableAttributedString.removeAttribute(NSAttributedString.Key.strikethroughStyle, range: NSMakeRange(0, mutableAttributedString.length))
-        return mutableAttributedString
-    }
-}
-
-class ListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ListViewController: UIViewController {
    
+    let memoManager = DataManager.shared
+    
     // 테이블 뷰
     var tableView: UITableView!
     // 스위치 호출
     var onOff: UISwitch!
-    
-    // UserDefaults 객체 생성
-    let defaults = UserDefaults.standard
-    let encoder = JSONEncoder()
-    let decoder = JSONDecoder()
+   
+    var sections: [String] = ["WORK","LIFE"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -92,11 +33,7 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         view.addSubview(tableView)
 
         // 저장된 데이터 불러오기
-        if let savedData = defaults.object(forKey: "memo") as? Data {
-            if let savedObject = try? decoder.decode([Memo].self, from: savedData) {
-                MemoStore.data = savedObject
-            }
-        }
+        memoManager.readData()
         
     }
     
@@ -125,14 +62,43 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
             if let toDo = alert.textFields?.first?.text{
                 MemoStore.data.append(Memo(title: toDo))
                 // 등록 시 저장, encoded는 Data형
-                if let encoded = try? self.encoder.encode(MemoStore.data) {
-                    self.defaults.set(encoded, forKey: "memo")
-                }
+                self.memoManager.saveData()
                 self.tableView.reloadData()
             }
         }))
         
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    
+
+    // 스위치 상태 바뀔 때 마다 처리
+    @objc func switchDidChange(_ sender: UISwitch) {
+
+        if sender.isOn == true {
+            MemoStore.data[sender.tag].isCompleted = true
+
+        }else{
+            MemoStore.data[sender.tag].isCompleted = false
+        }
+        
+        // switch 변경 시 저장(update), encoded는 Data형
+        memoManager.saveData()
+        
+        // 해당 스위치의 인덱스 값을 태그로 받아옴
+        let index = IndexPath(row: sender.tag, section: 0)
+        // 스위치 상태 변화 했으니 테이블 로우 reload
+        tableView.reloadRows(at: [index], with: .automatic)
+        
+    }
+   
+    
+}
+
+extension ListViewController: UITableViewDataSource {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return sections.count
     }
     
     // 테이블 뷰 셀 개수 반환
@@ -167,29 +133,10 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         return cell
     }
+}
 
-    // 스위치 상태 바뀔 때 마다 처리
-    @objc func switchDidChange(_ sender: UISwitch) {
 
-        if sender.isOn == true {
-            MemoStore.data[sender.tag].isCompleted = true
-
-        }else{
-            MemoStore.data[sender.tag].isCompleted = false
-        }
-        
-        // switch 변경 시 저장(update), encoded는 Data형
-        if let encoded = try? self.encoder.encode(MemoStore.data) {
-            self.defaults.set(encoded, forKey: "memo")
-        }
-        // 해당 스위치의 인덱스 값을 태그로 받아옴
-        let index = IndexPath(row: sender.tag, section: 0)
-        // 스위치 상태 변화 했으니 테이블 로우 reload
-        tableView.reloadRows(at: [index], with: .automatic)
-        
-    }
-    
-    
+extension ListViewController: UITableViewDelegate {
     // 테이블 뷰 셀 선택 처리
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // 선택된 셀의 항목 출력
@@ -209,7 +156,6 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         
     }
     
-    
     // 스와이프 삭제 구현
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
@@ -218,22 +164,9 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
             tableView.deleteRows(at: [indexPath], with: .fade)
             
             // 데이터 삭제 된 배열을 다시 저장
-            if let encoded = try? self.encoder.encode(MemoStore.data) {
-                self.defaults.set(encoded, forKey: "memo")
-            }
-            
-//            defaults.removeObject(forKey: "memo")
+            memoManager.saveData()
             
             tableView.reloadData()
         }
     }
-    
-    
-    
 }
-
-
-
-
-
-

@@ -9,6 +9,8 @@ import UIKit
 
 class CellDetailViewController: UIViewController {
 
+    let memoManager = DataManager.shared
+    
     // 선택한 셀 인덱스 값 받아오기
     var numOfPage: Int?
     
@@ -47,9 +49,7 @@ class CellDetailViewController: UIViewController {
             if let updateMemo = self.showDetail.text {
                 MemoStore.data[self.numOfPage!].title = updateMemo
                 // 수정하여 저장 
-                if let encoded = try?self.encoder.encode(MemoStore.data) {
-                    self.defaults.set(encoded, forKey: "memo")
-                }
+                self.memoManager.saveData()
             }
         }))
         
